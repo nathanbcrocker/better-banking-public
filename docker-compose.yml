@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  redis:
+    container_name: better-banking-redis
+    image: redis:latest
+    command: [ "redis-server", "--protected-mode", "no" ]
+    ports:
+      - "6379:6379"
+    deploy:
+      replicas: 1
+    restart: on-failure
+    networks:
+      - better-banking-network
+  better-banking:
+    container_name: better-banking
+    image: better-banking
+    ports:
+    - 9000:9000
+    restart: on-failure
+    links:
+      - redis
+    networks:
+      - better-banking-network
+    environment:
+      - io.betterbanking.integration.url-base=http://10.252.1.12:8080
+
+networks:
+  better-banking-network:
+    external: true
